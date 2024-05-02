@@ -17,7 +17,7 @@ function App() {
     width: number;
     height: number;
   }>({ width: 0, height: 0 });
-
+  const [flipSticker, setFlipSticker] = useState<boolean>(false); // Estado para rastrear si la imagen
   useEffect(() => {
     const stickerImage = new Image();
     stickerImage.onload = () => {
@@ -103,6 +103,10 @@ function App() {
             stickerDimensions.width;
 
           stickerElement.onload = () => {
+            if (flipSticker) {
+              context.translate(stickerWidthCanvas, 0);
+              context.scale(-1, 1);
+            }
             context.drawImage(
               stickerElement,
               stickerX,
@@ -127,15 +131,12 @@ function App() {
 
   return (
     <div className="App">
+      <h1>Hi anon make your meme</h1>
       <input type="file" onChange={handleImageUpload} />
       {image && (
         <div style={{ position: "relative" }}>
           <canvas ref={canvasRef} style={{ display: "none" }} />
-          <img
-            src={image}
-            alt="Uploaded"
-            style={{ maxWidth: "100%", maxHeight: "320px" }}
-          />
+          <img src={image} alt="Uploaded" style={{ maxWidth: "100%" }} />
           <div
             className="sticker"
             style={{
@@ -143,6 +144,7 @@ function App() {
               top: `${stickerPosition.y}px`,
               left: `${stickerPosition.x}px`,
               width: `${stickerWidth}px`,
+              transform: flipSticker ? "scaleX(-1)" : undefined,
             }}
           >
             <img src="/pepe.png" alt="Sticker" style={{ maxWidth: "100%" }} />
@@ -194,11 +196,21 @@ function App() {
               }}
             />
           </div>
+          <div>
+            <label style={{ position: "absolute", top: "460px" }}>
+              Flip pepe:
+              <input
+                type="checkbox"
+                checked={flipSticker}
+                onChange={(e) => setFlipSticker(e.target.checked)}
+              />
+            </label>
+          </div>
           <button
             style={{
               position: "absolute",
               zIndex: 500,
-              top: "470px",
+              top: "500px",
             }}
             onClick={handleDownload}
           >

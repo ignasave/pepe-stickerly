@@ -12,7 +12,7 @@ function App() {
     x: 50,
     y: 50,
   });
-  const [stickerWidth, setStickerWidth] = useState<number>(100); // Ancho inicial del sticker
+  const [stickerWidth, setStickerWidth] = useState<number>(100);
   const [stickerDimensions, setStickerDimensions] = useState<{
     width: number;
     height: number;
@@ -26,8 +26,9 @@ function App() {
         height: stickerImage.height,
       });
     };
-    stickerImage.src = "/pepe.png"; // Ruta de la imagen del sticker
+    stickerImage.src = "/pepe.png";
   }, []);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageDimensions, setImageDimensions] = useState<{
     width: number;
@@ -53,21 +54,6 @@ function App() {
     }
   }, [image]);
 
-  useEffect(() => {
-    if (image && canvasRef.current) {
-      const imageElement = new Image();
-      imageElement.src = image;
-
-      imageElement.onload = () => {
-        if (canvasRef.current) {
-          const canvas = canvasRef.current;
-          canvas.width = imageElement.width;
-          canvas.height = imageElement.height;
-        }
-      };
-    }
-  }, [image]);
-
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     const reader = new FileReader();
@@ -83,28 +69,11 @@ function App() {
     }
   };
 
-  const handleArrowClick = (direction: "up" | "down" | "left" | "right") => {
-    if (direction === "up") {
-      setStickerPosition((prevPosition) => ({
-        ...prevPosition,
-        y: prevPosition.y - 10,
-      }));
-    } else if (direction === "down") {
-      setStickerPosition((prevPosition) => ({
-        ...prevPosition,
-        y: prevPosition.y + 10,
-      }));
-    } else if (direction === "left") {
-      setStickerPosition((prevPosition) => ({
-        ...prevPosition,
-        x: prevPosition.x - 10,
-      }));
-    } else if (direction === "right") {
-      setStickerPosition((prevPosition) => ({
-        ...prevPosition,
-        x: prevPosition.x + 10,
-      }));
-    }
+  const handlePositionChange = (axis: "x" | "y", value: number) => {
+    setStickerPosition((prevPosition) => ({
+      ...prevPosition,
+      [axis]: value,
+    }));
   };
 
   const handleWidthChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -120,25 +89,20 @@ function App() {
         const imageElement = new Image();
         const stickerElement = new Image();
 
-        // Cargar la imagen subida
         imageElement.onload = () => {
-          // Dibujar la imagen subida en el canvas
           context.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
 
-          // Calcular las coordenadas y dimensiones del sticker en relación con el canvas
           const stickerX =
-            (stickerPosition.x / imageDimensions.width) * canvas.width;
+            (stickerPosition.x / imageDimensions.width) * imageElement.width;
           const stickerY =
-            (stickerPosition.y / imageDimensions.height) * canvas.height;
+            (stickerPosition.y / imageDimensions.height) * imageElement.height;
           const stickerWidthCanvas =
-            (stickerWidth / imageDimensions.width) * canvas.width;
+            (stickerWidth / imageDimensions.width) * imageElement.width;
           const stickerHeightCanvas =
             (stickerWidthCanvas * stickerDimensions.height) /
             stickerDimensions.width;
 
-          // Cargar la imagen del sticker
           stickerElement.onload = () => {
-            // Dibujar la imagen del sticker en el canvas con la posición y el ancho del sticker
             context.drawImage(
               stickerElement,
               stickerX,
@@ -147,22 +111,20 @@ function App() {
               stickerHeightCanvas
             );
 
-            // Convertir el contenido del canvas a una URL de datos
             const dataUrl = canvas.toDataURL("image/png");
 
-            // Crear un enlace temporal para iniciar la descarga
             const anchor = document.createElement("a");
             anchor.href = dataUrl;
-            anchor.download = "imagen_combinada.png"; // Establecer el nombre de archivo
+            anchor.download = "imagen_combinada.png";
             anchor.click();
           };
-          stickerElement.src = "/pepe.png"; // Establecer la fuente de la imagen del sticker
+          stickerElement.src = "/pepe.png";
         };
-        imageElement.src = image; // Establecer la fuente de la imagen subida
+        imageElement.src = image;
       }
     }
   };
-  const stickerWidthPercentage = (stickerWidth / imageDimensions.width) * 100;
+
   return (
     <div className="App">
       <input type="file" onChange={handleImageUpload} />
@@ -178,22 +140,44 @@ function App() {
             className="sticker"
             style={{
               position: "absolute",
-              top: `${(stickerPosition.y / imageDimensions.height) * 150}%`,
-              left: `${(stickerPosition.x / imageDimensions.width) * 155}%`,
+              top: `${stickerPosition.y}px`,
+              left: `${stickerPosition.x}px`,
               width: `${stickerWidth}px`,
-              height: "auto",
-              maxWidth: "100%",
-              maxHeight: "100%",
-              transform: `translate(-${100 - stickerWidthPercentage}%, -55%)`, // Centra el sticker
             }}
           >
             <img src="/pepe.png" alt="Sticker" style={{ maxWidth: "100%" }} />
           </div>
-          <div className="arrow-buttons">
-            <button onClick={() => handleArrowClick("up")}>&#8593;</button>
-            <button onClick={() => handleArrowClick("down")}>&#8595;</button>
-            <button onClick={() => handleArrowClick("left")}>&#8592;</button>
-            <button onClick={() => handleArrowClick("right")}>&#8594;</button>
+          <div>
+            <input
+              type="range"
+              value={stickerPosition.x}
+              onChange={(e) =>
+                handlePositionChange("x", parseInt(e.target.value))
+              }
+              min="0"
+              max={imageDimensions.width.toString()}
+              style={{
+                position: "absolute",
+                zIndex: 999,
+                width: "80%",
+                top: "340px",
+              }}
+            />
+            <input
+              type="range"
+              value={stickerPosition.y}
+              onChange={(e) =>
+                handlePositionChange("y", parseInt(e.target.value))
+              }
+              min="0"
+              max={imageDimensions.height.toString()}
+              style={{
+                position: "absolute",
+                zIndex: 999,
+                width: "80%",
+                top: "380px",
+              }}
+            />
           </div>
           <div>
             <input
@@ -206,6 +190,7 @@ function App() {
                 position: "absolute",
                 zIndex: 999,
                 width: "40%",
+                top: "420px",
               }}
             />
           </div>
@@ -213,10 +198,11 @@ function App() {
             style={{
               position: "absolute",
               zIndex: 500,
+              top: "470px",
             }}
             onClick={handleDownload}
           >
-            Descargar Imagen
+            Downlaod
           </button>
         </div>
       )}

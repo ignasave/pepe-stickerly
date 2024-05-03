@@ -93,23 +93,23 @@ function App() {
           context.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
 
           const stickerX =
-            (stickerPosition.x / imageDimensions.width) * imageElement.width;
+            (stickerPosition.x / imageDimensions.width) * canvas.width;
           const stickerY =
-            (stickerPosition.y / imageDimensions.height) * imageElement.height;
+            (stickerPosition.y / imageDimensions.height) * canvas.height;
           const stickerWidthCanvas =
-            (stickerWidth / imageDimensions.width) * imageElement.width;
+            (stickerWidth / imageDimensions.width) * canvas.width;
           const stickerHeightCanvas =
             (stickerWidthCanvas * stickerDimensions.height) /
             stickerDimensions.width;
 
           stickerElement.onload = () => {
             if (flipSticker) {
-              context.translate(stickerWidthCanvas, 0);
+              context.translate(stickerX + stickerWidthCanvas, stickerY);
               context.scale(-1, 1);
             }
             context.drawImage(
               stickerElement,
-              stickerX,
+              flipSticker ? 0 : stickerX,
               stickerY,
               stickerWidthCanvas,
               stickerHeightCanvas
@@ -143,11 +143,15 @@ function App() {
               position: "absolute",
               top: `${stickerPosition.y}px`,
               left: `${stickerPosition.x}px`,
-              width: `${stickerWidth}px`,
+
               transform: flipSticker ? "scaleX(-1)" : undefined,
             }}
           >
-            <img src="/pepe.png" alt="Sticker" style={{ maxWidth: "100%" }} />
+            <img
+              src="/pepe.png"
+              alt="Sticker"
+              style={{ width: `${stickerWidth}px` }}
+            />
           </div>
           <div>
             <input
@@ -186,8 +190,8 @@ function App() {
               type="range"
               value={stickerWidth}
               onChange={handleWidthChange}
-              min="50"
-              max="450"
+              min="0"
+              max="1500"
               style={{
                 position: "absolute",
                 zIndex: 999,

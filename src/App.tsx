@@ -45,6 +45,8 @@ function App() {
           const canvas = canvasRef.current;
           canvas.width = imageElement.width;
           canvas.height = imageElement.height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(imageElement, 0, 0);
           setImageDimensions({
             width: imageElement.width,
             height: imageElement.height,

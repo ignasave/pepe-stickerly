@@ -82,7 +82,6 @@ function App() {
     const width = parseInt(event.target.value);
     setStickerWidth(width);
   };
-
   const handleDownload = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -92,8 +91,6 @@ function App() {
         const stickerElement = new Image();
 
         imageElement.onload = () => {
-          context.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
-
           const stickerX =
             (stickerPosition.x / imageDimensions.width) * canvas.width;
           const stickerY =
@@ -103,6 +100,21 @@ function App() {
           const stickerHeightCanvas =
             (stickerWidthCanvas * stickerDimensions.height) /
             stickerDimensions.width;
+
+          let res_w = canvas.width;
+          let res_h = canvas.height;
+
+          if (stickerX + stickerWidthCanvas > res_w) {
+            res_w += stickerWidthCanvas - stickerX;
+            console.log("changed width");
+          }
+
+          if (stickerY + stickerElement.height > res_h) {
+            res_h += stickerHeightCanvas - stickerY;
+            console.log("changed heigth");
+          }
+
+          context.drawImage(imageElement, 0, 0, res_w, res_h);
 
           stickerElement.onload = () => {
             if (flipSticker) {
@@ -130,98 +142,99 @@ function App() {
       }
     }
   };
-
   return (
     <div className="App">
       <h1>Hi anon make your meme</h1>
       <input type="file" onChange={handleImageUpload} />
       {image && (
-        <div style={{ position: "relative" }}>
-          <canvas ref={canvasRef} style={{ display: "none" }} />
-          <img src={image} alt="Uploaded" style={{ maxWidth: "100%" }} />
-          <div
-            className="sticker"
-            style={{
-              position: "absolute",
-              top: `${stickerPosition.y}px`,
-              left: `${stickerPosition.x}px`,
+        <div style={{ position: "absolute" }}>
+          <div style={{ position: "relative" }}>
+            <canvas ref={canvasRef} style={{ display: "none" }} />
+            <img src={image} alt="Uploaded" style={{ maxWidth: "100%" }} />
+            <div
+              className="sticker"
+              style={{
+                position: "absolute",
+                top: `${stickerPosition.y}px`,
+                left: `${stickerPosition.x}px`,
 
-              transform: flipSticker ? "scaleX(-1)" : undefined,
-            }}
-          >
-            <img
-              src="/pepe.png"
-              alt="Sticker"
-              style={{ width: `${stickerWidth}px` }}
-            />
-          </div>
-          <div>
-            <input
-              type="range"
-              value={stickerPosition.x}
-              onChange={(e) =>
-                handlePositionChange("x", parseInt(e.target.value))
-              }
-              min="0"
-              max={imageDimensions.width.toString()}
-              style={{
-                position: "absolute",
-                zIndex: 999,
-                width: "80%",
-                top: "340px",
+                transform: flipSticker ? "scaleX(-1)" : undefined,
               }}
-            />
-            <input
-              type="range"
-              value={stickerPosition.y}
-              onChange={(e) =>
-                handlePositionChange("y", parseInt(e.target.value))
-              }
-              min="0"
-              max={imageDimensions.height.toString()}
-              style={{
-                position: "absolute",
-                zIndex: 999,
-                width: "80%",
-                top: "380px",
-              }}
-            />
-          </div>
-          <div>
-            <input
-              type="range"
-              value={stickerWidth}
-              onChange={handleWidthChange}
-              min="0"
-              max="1500"
-              style={{
-                position: "absolute",
-                zIndex: 999,
-                width: "40%",
-                top: "420px",
-              }}
-            />
-          </div>
-          <div>
-            <label style={{ position: "absolute", top: "460px" }}>
-              Flip pepe:
-              <input
-                type="checkbox"
-                checked={flipSticker}
-                onChange={(e) => setFlipSticker(e.target.checked)}
+            >
+              <img
+                src="/pepe.png"
+                alt="Sticker"
+                style={{ width: `${stickerWidth}px` }}
               />
-            </label>
+            </div>
+            <div>
+              <input
+                type="range"
+                value={stickerPosition.x}
+                onChange={(e) =>
+                  handlePositionChange("x", parseInt(e.target.value))
+                }
+                min="0"
+                max={imageDimensions.width.toString()}
+                style={{
+                  position: "absolute",
+                  zIndex: 999,
+                  width: "80%",
+                  top: "340px",
+                }}
+              />
+              <input
+                type="range"
+                value={stickerPosition.y}
+                onChange={(e) =>
+                  handlePositionChange("y", parseInt(e.target.value))
+                }
+                min="0"
+                max={imageDimensions.height.toString()}
+                style={{
+                  position: "absolute",
+                  zIndex: 999,
+                  width: "80%",
+                  top: "380px",
+                }}
+              />
+            </div>
+            <div>
+              <input
+                type="range"
+                value={stickerWidth}
+                onChange={handleWidthChange}
+                min="0"
+                max="1500"
+                style={{
+                  position: "absolute",
+                  zIndex: 999,
+                  width: "40%",
+                  top: "420px",
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ position: "absolute", top: "460px" }}>
+                Flip pepe:
+                <input
+                  type="checkbox"
+                  checked={flipSticker}
+                  onChange={(e) => setFlipSticker(e.target.checked)}
+                />
+              </label>
+            </div>
+            <button
+              style={{
+                position: "absolute",
+                zIndex: 500,
+                top: "500px",
+              }}
+              onClick={handleDownload}
+            >
+              Downlaod
+            </button>
           </div>
-          <button
-            style={{
-              position: "absolute",
-              zIndex: 500,
-              top: "500px",
-            }}
-            onClick={handleDownload}
-          >
-            Downlaod
-          </button>
         </div>
       )}
     </div>

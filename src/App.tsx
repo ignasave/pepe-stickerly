@@ -9,8 +9,8 @@ interface StickerPosition {
 function App() {
   const [image, setImage] = useState<string | null>(null);
   const [stickerPosition, setStickerPosition] = useState<StickerPosition>({
-    x: 50,
-    y: 50,
+    x: 0,
+    y: 0,
   });
   const [stickerWidth, setStickerWidth] = useState<number>(100);
   const [stickerDimensions, setStickerDimensions] = useState<{
@@ -37,19 +37,17 @@ function App() {
 
   useEffect(() => {
     if (image && canvasRef.current) {
-      const imageElement = new Image();
-      imageElement.src = image;
+      const inputImage = new Image();
+      inputImage.src = image;
 
-      imageElement.onload = () => {
+      inputImage.onload = () => {
         if (canvasRef.current) {
           const canvas = canvasRef.current;
-          canvas.width = imageElement.width;
-          canvas.height = imageElement.height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(imageElement, 0, 0);
+          canvas.width = inputImage.width;
+          canvas.height = inputImage.height;
           setImageDimensions({
-            width: imageElement.width,
-            height: imageElement.height,
+            width: inputImage.width,
+            height: inputImage.height,
           });
         }
       };
@@ -82,6 +80,7 @@ function App() {
     const width = parseInt(event.target.value);
     setStickerWidth(width);
   };
+
   const handleDownload = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -91,6 +90,8 @@ function App() {
         const stickerElement = new Image();
 
         imageElement.onload = () => {
+          console.log("***************");
+
           const stickerX =
             (stickerPosition.x / imageDimensions.width) * canvas.width;
           const stickerY =
@@ -104,27 +105,43 @@ function App() {
           let res_w = canvas.width;
           let res_h = canvas.height;
 
-          if (stickerX + stickerWidthCanvas > res_w) {
-            res_w += stickerWidthCanvas - stickerX;
+          console.log("canvas dims", canvas.width, canvas.height);
+
+          if (stickerPosition.x + stickerWidthCanvas > res_w) {
+            res_w += stickerWidthCanvas - stickerPosition.x;
+            console.log("res_w", res_w);
+            canvas.width += res_w;
             console.log("changed width");
           }
 
-          if (stickerY + stickerElement.height > res_h) {
-            res_h += stickerHeightCanvas - stickerY;
-            console.log("changed heigth");
+          if (stickerPosition.y + stickerHeightCanvas > res_h) {
+            res_h += stickerHeightCanvas - stickerPosition.y;
+            console.log("res_h", res_h);
+            canvas.height += res_h;
+            console.log("changed height");
           }
 
-          context.drawImage(imageElement, 0, 0, res_w, res_h);
+          console.log("canvas dims", canvas.width, canvas.height);
+          console.log("input res", canvas.width, canvas.height);
+          console.log("sticker pos", stickerPosition.x, stickerPosition.y);
+          context.drawImage(
+            imageElement,
+            0,
+            0,
+            imageElement.width,
+            imageElement.height
+          );
 
           stickerElement.onload = () => {
             if (flipSticker) {
-              context.translate(stickerX + stickerWidthCanvas, stickerY);
+              context.translate(stickerX, stickerY);
               context.scale(-1, 1);
             }
+
             context.drawImage(
               stickerElement,
-              flipSticker ? 0 : stickerX,
-              stickerY,
+              stickerPosition.x,
+              stickerPosition.y,
               stickerWidthCanvas,
               stickerHeightCanvas
             );
@@ -134,6 +151,7 @@ function App() {
             const anchor = document.createElement("a");
             anchor.href = dataUrl;
             anchor.download = "imagen_combinada.png";
+
             anchor.click();
           };
           stickerElement.src = "/pepe.png";
@@ -142,6 +160,7 @@ function App() {
       }
     }
   };
+
   return (
     <div className="App">
       <h1>Hi anon make your meme</h1>

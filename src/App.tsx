@@ -1,259 +1,177 @@
 import { useState, ChangeEvent, useRef, useEffect } from "react";
 import "./App.css";
 
-interface StickerPosition {
-  x: number;
-  y: number;
-}
-
 function App() {
-  const [image, setImage] = useState<string | null>(null);
-  const [stickerPosition, setStickerPosition] = useState<StickerPosition>({
-    x: 0,
-    y: 0,
-  });
-  const [stickerWidth, setStickerWidth] = useState<number>(100);
-  const [stickerDimensions, setStickerDimensions] = useState<{
-    width: number;
-    height: number;
-  }>({ width: 0, height: 0 });
-  const [flipSticker, setFlipSticker] = useState<boolean>(false); // Estado para rastrear si la imagen
+  const [baseImage, setBaseImage] = useState<Image>(new Image());
+  const [stickerImage, setStickerImage] = useState<Image>(new Image());
+  const [stickerX, setStickerX] = useState<number>(50);
+  const [stickerY, setStickerY] = useState<number>(50);
+  const [stickerScale, setStickerScale] = useState<number>(100);
+  const [stickerFlip, setStickerFlip] = useState<boolean>(false); 
+  const [baseImageReady, setBaseImageReady] = useState<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
-    const stickerImage = new Image();
-    stickerImage.onload = () => {
-      setStickerDimensions({
-        width: stickerImage.width,
-        height: stickerImage.height,
-      });
-    };
+    // Load default sticker
     stickerImage.src = "/pepe.png";
+
+    stickerImage.onload = () => {
+      refreshCanvas();
+    }
   }, []);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [imageDimensions, setImageDimensions] = useState<{
-    width: number;
-    height: number;
-  }>({ width: 0, height: 0 });
-
   useEffect(() => {
-    if (image && canvasRef.current) {
-      const inputImage = new Image();
-      inputImage.src = image;
+    refreshCanvas();
+  }, [baseImageReady, stickerX, stickerY, stickerScale, stickerFlip]);
 
-      inputImage.onload = () => {
-        if (canvasRef.current) {
-          const canvas = canvasRef.current;
-          canvas.width = inputImage.width;
-          canvas.height = inputImage.height;
-          setImageDimensions({
-            width: inputImage.width,
-            height: inputImage.height,
-          });
-        }
-      };
+
+  const refreshCanvas = () => {
+    if (!canvasRef.current || !baseImageReady)
+      return;
+
+    // Get current canvas size
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = baseImage.width;
+    canvas.height = baseImage.height;
+
+    const {width:canvasWidth, height:canvasHeight} = baseImage;
+    const {width:stickerWidth, height:stickerHeight} = stickerImage;
+    const realWidth = (canvas.width - stickerWidth * stickerScale/100);
+    const realHeight = (canvas.height - stickerHeight * stickerScale/100);
+
+    // Clear canvas
+    ctx?.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // Base Image
+    ctx?.drawImage(baseImage, 0, 0);
+
+    // Sticker Image
+    if (stickerFlip) {
+      ctx?.save();
+      ctx?.scale(-1, 1);
+      ctx?.drawImage(stickerImage, -(realWidth * (stickerX/100)) - stickerImage.width*(stickerScale/100), realHeight * (stickerY/100), stickerWidth*(stickerScale/100), stickerHeight*(stickerScale/100));
+      ctx.restore();
+    } else {
+      ctx?.drawImage(stickerImage, realWidth * (stickerX/100), realHeight * (stickerY/100), stickerWidth*(stickerScale/100), stickerHeight*(stickerScale/100));
     }
-  }, [image]);
+  }
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setImage(reader.result);
-      }
-    };
 
     if (file) {
-      reader.readAsDataURL(file);
+      baseImage.src = URL.createObjectURL(file);
     }
+
+    baseImage.onload = () => {
+        setBaseImageReady(true);
+    };    
   };
 
   const handlePositionChange = (axis: "x" | "y", value: number) => {
-    setStickerPosition((prevPosition) => ({
-      ...prevPosition,
-      [axis]: value,
-    }));
+    if (axis === "x")
+      setStickerX(value);
+
+    if (axis === "y")
+      setStickerY(value);
+
+    refreshCanvas();
   };
 
-  const handleWidthChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const width = parseInt(event.target.value);
-    setStickerWidth(width);
+  const handleScaleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const scale = parseInt(event.target.value);
+    setStickerScale(scale);
   };
 
   const handleDownload = () => {
-    if (canvasRef.current) {
-      const canvas = canvasRef.current;
-      const context = canvas.getContext("2d");
-      if (context && image) {
-        const imageElement = new Image();
-        const stickerElement = new Image();
+    if (!canvasRef.current || !baseImageReady)
+      return;
 
-        imageElement.onload = () => {
-          console.log("***************");
-
-          const stickerX =
-            (stickerPosition.x / imageDimensions.width) * canvas.width;
-          const stickerY =
-            (stickerPosition.y / imageDimensions.height) * canvas.height;
-          const stickerWidthCanvas =
-            (stickerWidth / imageDimensions.width) * canvas.width;
-          const stickerHeightCanvas =
-            (stickerWidthCanvas * stickerDimensions.height) /
-            stickerDimensions.width;
-
-          let res_w = canvas.width;
-          let res_h = canvas.height;
-
-          console.log("canvas dims", canvas.width, canvas.height);
-
-          if (stickerPosition.x + stickerWidthCanvas > res_w) {
-            res_w += stickerWidthCanvas - stickerPosition.x;
-            console.log("res_w", res_w);
-            canvas.width += res_w;
-            console.log("changed width");
-          }
-
-          if (stickerPosition.y + stickerHeightCanvas > res_h) {
-            res_h += stickerHeightCanvas - stickerPosition.y;
-            console.log("res_h", res_h);
-            canvas.height += res_h;
-            console.log("changed height");
-          }
-
-          console.log("canvas dims", canvas.width, canvas.height);
-          console.log("input res", canvas.width, canvas.height);
-          console.log("sticker pos", stickerPosition.x, stickerPosition.y);
-          context.drawImage(
-            imageElement,
-            0,
-            0,
-            imageElement.width,
-            imageElement.height
-          );
-
-          stickerElement.onload = () => {
-            if (flipSticker) {
-              context.translate(stickerX, stickerY);
-              context.scale(-1, 1);
-            }
-
-            context.drawImage(
-              stickerElement,
-              stickerPosition.x,
-              stickerPosition.y,
-              stickerWidthCanvas,
-              stickerHeightCanvas
-            );
-
-            const dataUrl = canvas.toDataURL("image/png");
-
-            const anchor = document.createElement("a");
-            anchor.href = dataUrl;
-            anchor.download = "imagen_combinada.png";
-
-            anchor.click();
-          };
-          stickerElement.src = "/pepe.png";
-        };
-        imageElement.src = image;
-      }
-    }
+    const canvas = canvasRef.current;
+    const dataURL = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = "imagen_combinada.png";
+    link.click();
   };
 
   return (
     <div className="App">
       <h1>Hi anon make your meme</h1>
       <input type="file" onChange={handleImageUpload} />
-      {image && (
-        <div style={{ position: "absolute" }}>
-          <div style={{ position: "relative" }}>
-            <canvas ref={canvasRef} style={{ display: "none" }} />
-            <img src={image} alt="Uploaded" style={{ maxWidth: "100%" }} />
-            <div
-              className="sticker"
+      
+      {baseImageReady && (
+        <div style={{ position: "relative" }}>
+          <canvas ref={canvasRef}/>
+          <div>
+            <input
+              type="range"
+              value={stickerX}
+              onChange={(e) =>
+                handlePositionChange("x", parseInt(e.target.value))
+              }
+              min="0"
+              max="100"
               style={{
                 position: "absolute",
-                top: `${stickerPosition.y}px`,
-                left: `${stickerPosition.x}px`,
-
-                transform: flipSticker ? "scaleX(-1)" : undefined,
+                zIndex: 999,
+                width: "80%",
+                top: "340px",
               }}
-            >
-              <img
-                src="/pepe.png"
-                alt="Sticker"
-                style={{ width: `${stickerWidth}px` }}
-              />
-            </div>
-            <div>
-              <input
-                type="range"
-                value={stickerPosition.x}
-                onChange={(e) =>
-                  handlePositionChange("x", parseInt(e.target.value))
-                }
-                min="0"
-                max={imageDimensions.width.toString()}
-                style={{
-                  position: "absolute",
-                  zIndex: 999,
-                  width: "80%",
-                  top: "340px",
-                }}
-              />
-              <input
-                type="range"
-                value={stickerPosition.y}
-                onChange={(e) =>
-                  handlePositionChange("y", parseInt(e.target.value))
-                }
-                min="0"
-                max={imageDimensions.height.toString()}
-                style={{
-                  position: "absolute",
-                  zIndex: 999,
-                  width: "80%",
-                  top: "380px",
-                }}
-              />
-            </div>
-            <div>
-              <input
-                type="range"
-                value={stickerWidth}
-                onChange={handleWidthChange}
-                min="0"
-                max="1500"
-                style={{
-                  position: "absolute",
-                  zIndex: 999,
-                  width: "40%",
-                  top: "420px",
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ position: "absolute", top: "460px" }}>
-                Flip pepe:
-                <input
-                  type="checkbox"
-                  checked={flipSticker}
-                  onChange={(e) => setFlipSticker(e.target.checked)}
-                />
-              </label>
-            </div>
-            <button
+            />
+            <input
+              type="range"
+              value={stickerY}
+              onChange={(e) =>
+                handlePositionChange("y", parseInt(e.target.value))
+              }
+              min="0"
+              max="100"
               style={{
                 position: "absolute",
-                zIndex: 500,
-                top: "500px",
+                zIndex: 999,
+                width: "80%",
+                top: "380px",
               }}
-              onClick={handleDownload}
-            >
-              Downlaod
-            </button>
+            />
           </div>
+          <div>
+            <input
+              type="range"
+              value={stickerScale}
+              onChange={handleScaleChange}
+              min="25"
+              max="200"
+              style={{
+                position: "absolute",
+                zIndex: 999,
+                width: "40%",
+                top: "420px",
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ position: "absolute", top: "460px" }}>
+              Flip pepe:
+              <input
+                type="checkbox"
+                checked={stickerFlip}
+                onChange={(e) => setStickerFlip(e.target.checked)}
+              />
+            </label>
+          </div>
+          <button
+            style={{
+              position: "absolute",
+              zIndex: 500,
+              top: "500px",
+            }}
+            onClick={handleDownload}
+          >
+            Downlaod
+          </button>
         </div>
       )}
     </div>

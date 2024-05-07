@@ -2,8 +2,8 @@ import { useState, ChangeEvent, useRef, useEffect } from "react";
 import "./App.css";
 
 function App() {
-  const [baseImage, setBaseImage] = useState<Image>(new Image());
-  const [stickerImage, setStickerImage] = useState<Image>(new Image());
+  const [baseImage] = useState<HTMLImageElement>(new Image());
+  const [stickerImage] = useState<HTMLImageElement>(new Image());
   const [stickerX, setStickerX] = useState<number>(50);
   const [stickerY, setStickerY] = useState<number>(50);
   const [stickerScale, setStickerScale] = useState<number>(100);
@@ -52,7 +52,7 @@ function App() {
       ctx?.save();
       ctx?.scale(-1, 1);
       ctx?.drawImage(stickerImage, -(realWidth * (stickerX/100)) - stickerImage.width*(stickerScale/100), realHeight * (stickerY/100), stickerWidth*(stickerScale/100), stickerHeight*(stickerScale/100));
-      ctx.restore();
+      ctx?.restore();
     } else {
       ctx?.drawImage(stickerImage, realWidth * (stickerX/100), realHeight * (stickerY/100), stickerWidth*(stickerScale/100), stickerHeight*(stickerScale/100));
     }

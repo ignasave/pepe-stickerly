@@ -130,7 +130,7 @@ function App() {
         />
       </label>
 
-      <div className="relative flex flex-col items-center mt-4">
+      <div className="relative flex flex-col items-center mt-4 gap-[45em]">
         <canvas
           ref={canvasRef}
           style={{ backgroundColor: canvasBackgroundColor }}
@@ -209,7 +209,14 @@ function App() {
               </button>
             </div>
           </div>
-        </div>
+        </div>{" "}
+        <iframe
+          id="dextools-widget"
+          title="DEXTools Trading Chart"
+          width="500"
+          height="400"
+          src="https://www.dextools.io/widget-chart/en/solana/pe-light/9c5sQKCq8mHVNr1cdbRMmg4pCB8Hs6NvoaotM8YsfdiR?theme=light&chartType=2&chartResolution=30&drawingToolbars=false"
+        ></iframe>
       </div>
     </div>
   );

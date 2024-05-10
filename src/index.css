@@ -16,6 +16,7 @@
     #01a545,
     #054212e5
   );
+  height: 110em;
   background-repeat: no-repeat;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -165,6 +166,7 @@ footer {
   justify-content: center;
   display: flex;
   padding: 0.5em;
+  margin-top: 28em;
 }
 body {
   position: relative;

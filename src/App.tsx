@@ -118,7 +118,14 @@ function App() {
         Hi anon, make your meme
       </h1>
 
-      <input type="file" onChange={handleImageUpload} />
+      <label className="addbg">
+        Add background
+        <input
+          type="file"
+          onChange={handleImageUpload}
+          style={{ display: "none" }}
+        />
+      </label>
 
       <div className="relative flex flex-col items-center mt-4">
         <canvas
@@ -126,7 +133,7 @@ function App() {
           style={{ backgroundColor: canvasBackgroundColor }}
           className="mb-4 w-[20em]"
         />
-        <div className="absolute max-w-[30em] text-orange-400 font-bold w-[70%] md:w-[100%] top-[35em] left-[-10] transform -translate-y-1/2">
+        <div className="absolute my-8 max-w-[30em] text-orange-400 font-bold w-[80%] md:w-[100%] top-[35em] left-[-10] transform -translate-y-1/2">
           <div className="flex flex-col gap-4 p-4 border-4  bg-gray-100 border-black   rounded">
             <div className="flex items-center gap-2">
               <label htmlFor="x-range">X:</label>

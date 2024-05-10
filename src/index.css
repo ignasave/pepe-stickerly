@@ -181,7 +181,16 @@ button {
   display: inline-block;
   margin: 20px;
 }
-
+.addbg {
+  max-width: 10em;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+}
+.addbg:hover {
+  cursor: pointer;
+}
+.addbg,
 button a {
   color: white;
   font-family: Helvetica, sans-serif;
@@ -207,6 +216,7 @@ button a {
   border-radius: 5px;
 }
 
+.addbg:active,
 button a:active {
   top: 10px;
   background-color: #f78900;

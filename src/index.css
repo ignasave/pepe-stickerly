@@ -161,11 +161,14 @@ a {
 
   text-decoration: inherit;
 }
-
+footer {
+  justify-content: center;
+  display: flex;
+  padding: 0.5em;
+}
 body {
   position: relative;
   margin: 0 auto;
-  display: flex;
   place-items: center;
 }
 
@@ -183,7 +186,7 @@ button a {
   color: white;
   font-family: Helvetica, sans-serif;
   font-weight: bold;
-  font-size: 36px;
+  font-size: 24px;
   text-align: center;
   text-decoration: none;
   background-color: #ffa12b;

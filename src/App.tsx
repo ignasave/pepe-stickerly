@@ -113,8 +113,10 @@ function App() {
   };
 
   return (
-    <div className=" flex-col justify-center items-center h-[70em]">
-      <h1 className="mb-4 freeman">Hi anon, make your meme</h1>
+    <div className=" flex-col justify-center items-center text-center h-[70em]">
+      <h1 className="mb-4 freeman  py-10  animate-jump-in animate-duration-700 animate-ease-in-out">
+        Hi anon, make your meme
+      </h1>
 
       <input type="file" onChange={handleImageUpload} />
 
@@ -124,7 +126,7 @@ function App() {
           style={{ backgroundColor: canvasBackgroundColor }}
           className="mb-4 w-[20em]"
         />
-        <div className="absolute text-orange-400 font-bold top-[35em] left-[-10] transform -translate-y-1/2">
+        <div className="absolute max-w-[30em] text-orange-400 font-bold w-[70%] md:w-[100%] top-[35em] left-[-10] transform -translate-y-1/2">
           <div className="flex flex-col gap-4 p-4 border-4  bg-gray-100 border-black   rounded">
             <div className="flex items-center gap-2">
               <label htmlFor="x-range">X:</label>
@@ -176,14 +178,14 @@ function App() {
                 <span className="checkmark mt-3 cursor-pointer"></span>
               </label>
             </div>
-            <div className="flex gap-2 ">
-              <button className="  text-white px-3 py-1 rounded">
-                {" "}
-                <a onClick={handleDownload}> Download</a>
-              </button>
+            <div className="flex md:flex-grow flex-col gap-2 ">
               <button className="  text-white px-3 py-1 rounded">
                 {" "}
                 <a onClick={handleChangeCanvasColor}> Change BG color</a>
+              </button>
+              <button className="  text-white px-3 py-1 rounded">
+                {" "}
+                <a onClick={handleDownload}> Download</a>
               </button>
             </div>
           </div>

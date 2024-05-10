@@ -212,10 +212,11 @@ function App() {
         </div>{" "}
         <iframe
           id="dextools-widget"
+          sandbox="allow-same-origin allow-scripts"
           title="DEXTools Trading Chart"
           width="500"
           height="400"
-          src="https://www.dextools.io/widget-chart/en/solana/pe-light/9c5sQKCq8mHVNr1cdbRMmg4pCB8Hs6NvoaotM8YsfdiR?theme=light&chartType=2&chartResolution=30&drawingToolbars=false"
+          src="https://www.dextools.io/widget-chart/en/solana/pe-light/2AvPFAV3nvTtAJpWXsMkcp5onGMNZ6YUYNoaYPjf457r?theme=light&chartType=2&chartResolution=30&drawingToolbars=false"
         ></iframe>
       </div>
     </div>

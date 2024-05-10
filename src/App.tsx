@@ -118,7 +118,10 @@ function App() {
         Hi anon, make your meme
       </h1>
 
-      <label className="addbg">
+      <label
+        style={{ whiteSpace: "nowrap" }}
+        className="addbg animate-jump-in animate-duration-700 animate-delay-200 animate-ease-in-out"
+      >
         Add background
         <input
           type="file"
@@ -131,7 +134,7 @@ function App() {
         <canvas
           ref={canvasRef}
           style={{ backgroundColor: canvasBackgroundColor }}
-          className="mb-4 w-[20em]"
+          className="mb-4 w-[20em] mt-8 animate-jump-in animate-duration-700 animate-delay-200 animate-ease-in-out"
         />
         <div className="absolute my-8 max-w-[30em] text-orange-400 font-bold w-[80%] md:w-[100%] top-[35em] left-[-10] transform -translate-y-1/2">
           <div className="flex flex-col gap-4 p-4 border-4  bg-gray-100 border-black   rounded">
@@ -185,12 +188,18 @@ function App() {
                 <span className="checkmark mt-3 cursor-pointer"></span>
               </label>
             </div>
-            <div className="flex md:flex-grow flex-col gap-2 ">
-              <button className="  text-white px-3 py-1 rounded">
+            <div className="flex md:flex-grow flex-col gap-2 justify-center m-auto ">
+              <button className="animate-jump-in animate-duration-700 animate-delay-200 animate-ease-in-out  text-white px-3 py-1 rounded">
                 {" "}
-                <a onClick={handleChangeCanvasColor}> Change BG color</a>
+                <a
+                  onClick={handleChangeCanvasColor}
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  {" "}
+                  Change BG color
+                </a>
               </button>
-              <button className="  text-white px-3 py-1 rounded">
+              <button className=" animate-jump-in animate-duration-700 animate-delay-200 animate-ease-in-out text-white px-3 py-1 rounded">
                 {" "}
                 <a onClick={handleDownload}> Download</a>
               </button>

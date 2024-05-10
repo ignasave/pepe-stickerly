@@ -188,12 +188,13 @@ function App() {
                 <span className="checkmark mt-3 cursor-pointer"></span>
               </label>
             </div>
-            <div className="flex md:flex-grow flex-col gap-2 justify-center m-auto ">
+            <div className="flex md:flex-grow flex-col w-[95%] gap-2 justify-center m-auto   ">
               <button className="animate-jump-in animate-duration-700 animate-delay-200 animate-ease-in-out  text-white px-3 py-1 rounded">
                 {" "}
                 <a
                   onClick={handleChangeCanvasColor}
                   style={{ whiteSpace: "nowrap" }}
+                  className="text-[18px] md:text-[24px] w-full m-auto "
                 >
                   {" "}
                   Change BG color
@@ -201,7 +202,10 @@ function App() {
               </button>
               <button className=" animate-jump-in animate-duration-700 animate-delay-200 animate-ease-in-out text-white px-3 py-1 rounded">
                 {" "}
-                <a onClick={handleDownload}> Download</a>
+                <a onClick={handleDownload} className=" w-full m-auto ">
+                  {" "}
+                  Download
+                </a>
               </button>
             </div>
           </div>

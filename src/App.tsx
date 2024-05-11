@@ -43,8 +43,8 @@ function App() {
 
     const { width: canvasWidth, height: canvasHeight } = baseImage;
     const { width: stickerWidth, height: stickerHeight } = stickerImage;
-    const realWidth = canvas.width - (stickerWidth * stickerScale) / 100;
-    const realHeight = canvas.height - (stickerHeight * stickerScale) / 100;
+    const realWidth = canvas.width * (stickerScale / 100);
+    const realHeight = canvas.height * (stickerScale / 100);
 
     // Clear canvas
     ctx?.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -70,8 +70,8 @@ function App() {
         stickerImage,
         realWidth * (stickerX / 100),
         realHeight * (stickerY / 100),
-        stickerWidth * (stickerScale / 100),
-        stickerHeight * (stickerScale / 100)
+        stickerWidth * stickerScale,
+        stickerHeight * stickerScale
       );
     }
   };

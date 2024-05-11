@@ -58,9 +58,12 @@ function App() {
       ctx?.scale(-1, 1);
       ctx?.drawImage(
         stickerImage,
-        -(realWidth * (stickerX / 100)) -
-          stickerImage.width * (stickerScale / 100),
-        realHeight * (stickerY / 100),
+        -(
+          realWidth * (stickerX / 100) +
+          (stickerWidth * (stickerScale / 100)) / 2
+        ),
+        realHeight * (stickerY / 100) -
+          (stickerHeight * (stickerScale / 100)) / 2,
         stickerWidth * (stickerScale / 100),
         stickerHeight * (stickerScale / 100)
       );
@@ -68,8 +71,10 @@ function App() {
     } else {
       ctx?.drawImage(
         stickerImage,
-        realWidth * (stickerX / 100),
-        realHeight * (stickerY / 100),
+        realWidth * (stickerX / 100) -
+          (stickerWidth * (stickerScale / 100)) / 2,
+        realHeight * (stickerY / 100) -
+          (stickerHeight * (stickerScale / 100)) / 2,
         stickerWidth * (stickerScale / 100),
         stickerHeight * (stickerScale / 100)
       );

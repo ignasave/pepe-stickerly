@@ -70,8 +70,8 @@ function App() {
         stickerImage,
         realWidth * (stickerX / 100),
         realHeight * (stickerY / 100),
-        stickerWidth * stickerScale,
-        stickerHeight * stickerScale
+        stickerWidth * (stickerScale / 100),
+        stickerHeight * (stickerScale / 100)
       );
     }
   };
